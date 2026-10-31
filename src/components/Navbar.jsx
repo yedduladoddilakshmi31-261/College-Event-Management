@@ -1,15 +1,21 @@
 
 import React from 'react'
-import { FaCalendarAlt, FaHome, FaList, FaUser } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import {
+  FaCalendarAlt,
+  FaHome,
+  FaList,
+  FaUser
+} from 'react-icons/fa'
 
 function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-custom">
       <div className="container-fluid">
 
-        <a className="navbar-brand" href="/">
+        <Link className="navbar-brand" to="/">
           <FaCalendarAlt /> College Events
-        </a>
+        </Link>
 
         <button
           className="navbar-toggler bg-light"
@@ -24,21 +30,21 @@ function Navbar() {
           <ul className="navbar-nav ms-auto">
 
             <li className="nav-item">
-              <a className="nav-link" href="/">
+              <Link className="nav-link" to="/">
                 <FaHome /> Home
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link" href="#events">
+              <Link className="nav-link" to="/events">
                 <FaList /> Events
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link" href="#register">
+              <Link className="nav-link" to="/register">
                 <FaUser /> Register
-              </a>
+              </Link>
             </li>
 
           </ul>
