@@ -1,42 +1,41 @@
 
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import {
-  getRegistrations,
-  saveRegistrations
-} from '../utils/storage'
+import EventCard from '../components/EventCard'
+import { getEvents } from '../utils/storage'
 import '../App.css'
 
-function MyEvents() {
-  const [registrations, setRegistrations] = useState([])
+function Events() {
+  const [events, setEvents] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [category, setCategory] = useState('All')
+
+  const navigate = useNavigate()
 
   useEffect(() => {
-    setRegistrations(getRegistrations())
+    setEvents(getEvents())
   }, [])
 
-  const handleCancel = (id) => {
-    const confirmCancel = window.confirm(
-      'Are you sure you want to cancel this registration?'
-    )
-
-    if (confirmCancel) {
-      const updatedRegistrations = registrations.filter(
-        (registration) => registration.id !== id
-      )
-
-      saveRegistrations(updatedRegistrations)
-      setRegistrations(updatedRegistrations)
-
-      alert('Registration cancelled successfully!')
-    }
+  const handleRegister = (event) => {
+    navigate('/register', {
+      state: { eventId: event.id }
+    })
   }
 
-  const filteredRegistrations = registrations.filter((registration) =>
-    `${registration.studentName || ''} ${registration.eventTitle || ''} ${registration.email || ''}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  )
+  const filteredEvents = events.filter((event) => {
+    const search = searchTerm.toLowerCase()
+
+    const matchesSearch =
+      (event.title || '').toLowerCase().includes(search) ||
+      (event.description || '').toLowerCase().includes(search) ||
+      (event.venue || '').toLowerCase().includes(search)
+
+    const matchesCategory =
+      category === 'All' || event.category === category
+
+    return matchesSearch && matchesCategory
+  })
 
   return (
     <div className="app-container">
@@ -46,88 +45,69 @@ function MyEvents() {
       <div className="container py-5">
 
         <h2 className="section-title">
-          My Registered Events
+          Explore College Events
         </h2>
 
-        <div className="card shadow p-4">
+        <div className="row mb-4">
 
-          <input
-            type="text"
-            className="form-control mb-4"
-            placeholder="Search by student name, email or event..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <div className="col-md-6 mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search events by name, description or venue..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
-          <h5 className="mb-3">
-            Total Registrations: {registrations.length}
-          </h5>
+          <div className="col-md-6 mb-3">
+            <select
+              className="form-select"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="All">All Categories</option>
+              <option value="Technical">Technical</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Sports">Sports</option>
+            </select>
+          </div>
 
-          {filteredRegistrations.length > 0 ? (
+        </div>
 
-            <div className="table-responsive">
+        <p className="text-muted mb-4">
+          Showing {filteredEvents.length} event(s)
+        </p>
 
-              <table className="table table-bordered table-hover">
+        <div className="row">
 
-                <thead className="table-dark">
-                  <tr>
-                    <th>S.No</th>
-                    <th>Student Name</th>
-                    <th>Email</th>
-                    <th>Event Name</th>
-                    <th>Department</th>
-                    <th>Registration Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filteredRegistrations.map((registration, index) => (
-                    <tr key={registration.id}>
-                      <td>{index + 1}</td>
-
-                      <td>
-                        {registration.studentName || 'N/A'}
-                      </td>
-
-                      <td>
-                        {registration.email || 'N/A'}
-                      </td>
-
-                      <td>
-                        {registration.eventTitle || 'N/A'}
-                      </td>
-
-                      <td>
-                        {registration.department || 'N/A'}
-                      </td>
-
-                      <td>
-                        {registration.registeredAt || 'N/A'}
-                      </td>
-
-                      <td>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleCancel(registration.id)}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-
-              </table>
-
-            </div>
-
+          {filteredEvents.length > 0 ? (
+            filteredEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onRegister={handleRegister}
+              />
+            ))
           ) : (
-            <div className="text-center py-5">
-              <h4>No registrations found</h4>
+            <div className="col-12 text-center py-5">
+
+              <h4>No Events Found</h4>
+
               <p className="text-muted">
-                Register for a college event to see it here.
+                Try another search term or category.
               </p>
+
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setSearchTerm('')
+                  setCategory('All')
+                }}
+              >
+                Clear Filters
+              </button>
+
             </div>
           )}
 
@@ -143,4 +123,4 @@ function MyEvents() {
   )
 }
 
-export default MyEvents
+export default Events
