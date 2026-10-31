@@ -32,6 +32,10 @@ function Navbar() {
             <FaUser /> Register
           </Link>
 
+          <Link className="nav-link" to="/login">
+  <FaUser /> Login
+</Link>
+
           <Link className="nav-link" to="/my-events">
             <FaClipboardList /> My Events
           </Link>
