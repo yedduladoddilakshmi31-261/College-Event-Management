@@ -1,48 +1,39 @@
 
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import EventCard from '../components/EventCard'
-import { getEvents, saveEvents, registerForEvent } from '../utils/storage'
+import { getEvents, getRegistrations, registerForEvent } from '../utils/storage'
 import '../App.css'
 
 function Events() {
   const [events, setEvents] = useState([])
-  const [search, setSearch] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const [category, setCategory] = useState('All')
 
+  const navigate = useNavigate()
+
   useEffect(() => {
-    const savedEvents = getEvents()
-    setEvents(savedEvents)
+    setEvents(getEvents())
   }, [])
 
-  const filteredEvents = events.filter((event) => {
-    const matchesSearch = event.title
-      .toLowerCase()
-      .includes(search.toLowerCase())
-
-    const matchesCategory =
-      category === 'All' || event.category === category
-
-    return matchesSearch && matchesCategory
-  })
-
   const handleRegister = (event) => {
-    const studentName = window.prompt('Enter your name:')
+    const studentName = window.prompt('Enter your name to register:')
 
-    if (!studentName || !studentName.trim()) return
+    if (!studentName || !studentName.trim()) {
+      return
+    }
 
-    const registrations = JSON.parse(
-      localStorage.getItem('college_registrations') || '[]'
+    const registrations = getRegistrations()
+
+    const alreadyRegistered = registrations.some(
+      (registration) =>
+        registration.eventId === event.id &&
+        registration.studentName?.toLowerCase() === studentName.trim().toLowerCase()
     )
 
-    const exists = registrations.some(
-      (item) =>
-        item.eventId === event.id &&
-        item.studentName.toLowerCase() === studentName.trim().toLowerCase()
-    )
-
-    if (exists) {
-      alert('Already registered for this event!')
+    if (alreadyRegistered) {
+      alert('You are already registered for this event!')
       return
     }
 
@@ -55,7 +46,20 @@ function Events() {
     })
 
     alert('Registration successful!')
+    navigate('/my-events')
   }
+
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch =
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.venue.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesCategory =
+      category === 'All' || event.category === category
+
+    return matchesSearch && matchesCategory
+  })
 
   return (
     <div className="app-container">
@@ -66,19 +70,20 @@ function Events() {
 
         <h2 className="section-title">Explore College Events</h2>
 
+        {/* Search and Filter */}
         <div className="row mb-4">
 
-          <div className="col-md-7 mb-3">
+          <div className="col-md-6 mb-3">
             <input
               type="text"
               className="form-control"
-              placeholder="Search events..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search events by name, description or venue..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div className="col-md-5 mb-3">
+          <div className="col-md-6 mb-3">
             <select
               className="form-select"
               value={category}
@@ -93,6 +98,11 @@ function Events() {
 
         </div>
 
+        <p className="text-muted mb-4">
+          Showing {filteredEvents.length} event(s)
+        </p>
+
+        {/* Event Cards */}
         <div className="row">
 
           {filteredEvents.length > 0 ? (
@@ -104,9 +114,20 @@ function Events() {
               />
             ))
           ) : (
-            <div className="text-center py-5">
-              <h4>No events found!</h4>
-              <p>Try another search or category.</p>
+            <div className="col-12 text-center py-5">
+              <h4>No events found</h4>
+              <p className="text-muted">
+                Try another search term or category.
+              </p>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setSearchTerm('')
+                  setCategory('All')
+                }}
+              >
+                Clear Filters
+              </button>
             </div>
           )}
 
