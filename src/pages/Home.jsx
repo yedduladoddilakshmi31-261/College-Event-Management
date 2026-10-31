@@ -1,14 +1,9 @@
 
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import EventCard from '../components/EventCard'
-import {
-  getEvents,
-  saveEvents,
-  getRegistrations,
-  registerForEvent
-} from '../utils/storage'
+import { getEvents, saveEvents } from '../utils/storage'
 import '../App.css'
 
 const sampleEvents = [
@@ -43,6 +38,7 @@ const sampleEvents = [
 
 function Home() {
   const [events, setEvents] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     let savedEvents = getEvents()
@@ -56,34 +52,9 @@ function Home() {
   }, [])
 
   const handleRegister = (event) => {
-    const studentName = window.prompt('Enter your name to register:')
-
-    if (!studentName || !studentName.trim()) {
-      return
-    }
-
-    const registrations = getRegistrations()
-
-    const alreadyRegistered = registrations.some(
-      (registration) =>
-        registration.eventId === event.id &&
-        registration.studentName?.toLowerCase() === studentName.trim().toLowerCase()
-    )
-
-    if (alreadyRegistered) {
-      alert('You are already registered for this event!')
-      return
-    }
-
-    registerForEvent({
-      id: Date.now(),
-      eventId: event.id,
-      eventTitle: event.title,
-      studentName: studentName.trim(),
-      registeredAt: new Date().toLocaleDateString()
+    navigate('/register', {
+      state: { eventId: event.id }
     })
-
-    alert('Registration successful!')
   }
 
   return (
@@ -91,7 +62,6 @@ function Home() {
 
       <Navbar />
 
-      {/* Hero Section */}
       <section className="hero-section">
         <div className="container">
 
@@ -102,6 +72,7 @@ function Home() {
           </p>
 
           <div className="mt-4">
+
             <Link
               to="/events"
               className="btn btn-light btn-lg me-3"
@@ -115,12 +86,12 @@ function Home() {
             >
               Register Now
             </Link>
+
           </div>
 
         </div>
       </section>
 
-      {/* About Section */}
       <section className="container py-5 text-center">
 
         <h2 className="section-title">
@@ -135,7 +106,6 @@ function Home() {
 
       </section>
 
-      {/* Featured Events */}
       <section className="container">
 
         <h2 className="section-title">
@@ -168,7 +138,6 @@ function Home() {
 
       </section>
 
-      {/* Features Section */}
       <section className="container py-5">
 
         <h2 className="section-title">
