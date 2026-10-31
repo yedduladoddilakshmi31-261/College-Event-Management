@@ -5,7 +5,8 @@ import {
   FaCalendarAlt,
   FaHome,
   FaList,
-  FaUser
+  FaUser,
+  FaClipboardList
 } from 'react-icons/fa'
 
 function Navbar() {
@@ -17,37 +18,24 @@ function Navbar() {
           <FaCalendarAlt /> College Events
         </Link>
 
-        <button
-          className="navbar-toggler bg-light"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        <div className="navbar-nav ms-auto">
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          <Link className="nav-link" to="/">
+            <FaHome /> Home
+          </Link>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                <FaHome /> Home
-              </Link>
-            </li>
+          <Link className="nav-link" to="/events">
+            <FaList /> Events
+          </Link>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/events">
-                <FaList /> Events
-              </Link>
-            </li>
+          <Link className="nav-link" to="/register">
+            <FaUser /> Register
+          </Link>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/register">
-                <FaUser /> Register
-              </Link>
-            </li>
+          <Link className="nav-link" to="/my-events">
+            <FaClipboardList /> My Events
+          </Link>
 
-          </ul>
         </div>
       </div>
     </nav>
