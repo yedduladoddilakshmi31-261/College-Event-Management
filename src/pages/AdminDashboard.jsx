@@ -12,6 +12,7 @@ import '../App.css'
 function AdminDashboard() {
   const [events, setEvents] = useState([])
   const [registrations, setRegistrations] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [formData, setFormData] = useState({
     title: '',
@@ -95,7 +96,6 @@ function AdminDashboard() {
 
       saveEvents(updatedEvents)
       setEvents(updatedEvents)
-
       alert('Event deleted successfully!')
     }
   }
@@ -108,10 +108,15 @@ function AdminDashboard() {
 
       saveRegistrations(updatedRegistrations)
       setRegistrations(updatedRegistrations)
-
       alert('Registration deleted successfully!')
     }
   }
+
+  const filteredRegistrations = registrations.filter((registration) =>
+    `${registration.studentName || ''} ${registration.email || ''} ${registration.eventTitle || ''}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="app-container">
@@ -304,8 +309,16 @@ function AdminDashboard() {
           </table>
         </div>
 
-        {/* Student Registration Management */}
+        {/* Student Registrations */}
         <h4 className="mb-3">Student Registrations</h4>
+
+        <input
+          type="text"
+          className="form-control mb-3"
+          placeholder="Search by student name, email or event..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
         <div className="table-responsive">
           <table className="table table-bordered table-hover">
@@ -323,8 +336,8 @@ function AdminDashboard() {
             </thead>
 
             <tbody>
-              {registrations.length > 0 ? (
-                registrations.map((registration, index) => (
+              {filteredRegistrations.length > 0 ? (
+                filteredRegistrations.map((registration, index) => (
                   <tr key={registration.id}>
                     <td>{index + 1}</td>
                     <td>{registration.studentName || 'N/A'}</td>
@@ -347,7 +360,7 @@ function AdminDashboard() {
               ) : (
                 <tr>
                   <td colSpan="7" className="text-center">
-                    No student registrations available
+                    No registrations found
                   </td>
                 </tr>
               )}
