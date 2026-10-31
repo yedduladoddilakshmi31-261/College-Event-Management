@@ -1,10 +1,12 @@
 
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import EventCard from '../components/EventCard'
 import {
   getEvents,
   saveEvents,
+  getRegistrations,
   registerForEvent
 } from '../utils/storage'
 import '../App.css'
@@ -25,7 +27,7 @@ const sampleEvents = [
     date: 'November 20, 2026',
     category: 'Cultural',
     venue: 'College Ground',
-    description: 'Enjoy music, dance, drama and cultural performances.',
+    description: 'Celebrate music, dance, art and cultural activities.',
     image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a'
   },
   {
@@ -34,7 +36,7 @@ const sampleEvents = [
     date: 'December 5, 2026',
     category: 'Sports',
     venue: 'Sports Stadium',
-    description: 'Participate in exciting indoor and outdoor sports.',
+    description: 'Participate in exciting sports and team competitions.',
     image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211'
   }
 ]
@@ -43,36 +45,33 @@ function Home() {
   const [events, setEvents] = useState([])
 
   useEffect(() => {
-    const savedEvents = getEvents()
+    let savedEvents = getEvents()
 
     if (savedEvents.length === 0) {
       saveEvents(sampleEvents)
-      setEvents(sampleEvents)
-    } else {
-      setEvents(savedEvents)
+      savedEvents = sampleEvents
     }
+
+    setEvents(savedEvents)
   }, [])
 
   const handleRegister = (event) => {
-    const studentName = window.prompt('Enter your name:')
+    const studentName = window.prompt('Enter your name to register:')
 
     if (!studentName || !studentName.trim()) {
-      alert('Please enter your name.')
       return
     }
 
-    const registrations = JSON.parse(
-      localStorage.getItem('college_registrations') || '[]'
-    )
+    const registrations = getRegistrations()
 
     const alreadyRegistered = registrations.some(
-      (item) =>
-        item.eventId === event.id &&
-        item.studentName.toLowerCase() === studentName.trim().toLowerCase()
+      (registration) =>
+        registration.eventId === event.id &&
+        registration.studentName?.toLowerCase() === studentName.trim().toLowerCase()
     )
 
     if (alreadyRegistered) {
-      alert('You have already registered for this event!')
+      alert('You are already registered for this event!')
       return
     }
 
@@ -92,44 +91,126 @@ function Home() {
 
       <Navbar />
 
+      {/* Hero Section */}
       <section className="hero-section">
-        <h1>Welcome to College Events</h1>
+        <div className="container">
 
-        <p>
-          Discover events, showcase your talents
-          and create unforgettable memories!
-        </p>
+          <h1>Welcome to College Events</h1>
 
-        <a href="#events" className="btn btn-light mt-3">
-          Explore Events
-        </a>
+          <p>
+            Discover, Participate and Celebrate Campus Life!
+          </p>
+
+          <div className="mt-4">
+            <Link
+              to="/events"
+              className="btn btn-light btn-lg me-3"
+            >
+              Explore Events
+            </Link>
+
+            <Link
+              to="/register"
+              className="btn btn-outline-light btn-lg"
+            >
+              Register Now
+            </Link>
+          </div>
+
+        </div>
       </section>
 
-      <div className="container">
+      {/* About Section */}
+      <section className="container py-5 text-center">
 
-        <h2 className="section-title" id="events">
-          Upcoming Events
+        <h2 className="section-title">
+          About Our Event Portal
+        </h2>
+
+        <p className="text-muted">
+          College Event Management System provides a simple platform
+          for students to explore upcoming college events, register
+          for activities and manage their registrations.
+        </p>
+
+      </section>
+
+      {/* Featured Events */}
+      <section className="container">
+
+        <h2 className="section-title">
+          Featured Events
         </h2>
 
         <div className="row">
 
-          {events.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              onRegister={handleRegister}
-            />
-          ))}
+          {events.length > 0 ? (
+            events.slice(0, 3).map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onRegister={handleRegister}
+              />
+            ))
+          ) : (
+            <p className="text-center">
+              No events available currently.
+            </p>
+          )}
 
         </div>
 
-      </div>
+        <div className="text-center mt-4">
+          <Link to="/events" className="btn btn-primary btn-lg">
+            View All Events
+          </Link>
+        </div>
+
+      </section>
+
+      {/* Features Section */}
+      <section className="container py-5">
+
+        <h2 className="section-title">
+          Why Use Our Portal?
+        </h2>
+
+        <div className="row text-center">
+
+          <div className="col-md-4 mb-3">
+            <div className="card shadow p-4 h-100">
+              <h4>Explore Events</h4>
+              <p>
+                Discover technical, cultural and sports events.
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-4 mb-3">
+            <div className="card shadow p-4 h-100">
+              <h4>Easy Registration</h4>
+              <p>
+                Register for your favourite college events easily.
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-4 mb-3">
+            <div className="card shadow p-4 h-100">
+              <h4>Manage Events</h4>
+              <p>
+                View your registrations and manage event details.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
 
       <footer className="footer">
-        <p>
-          © 2026 College Event Management System.
-          All Rights Reserved.
-        </p>
+        <p>© 2026 College Event Management System</p>
+        <p>Designed using React JS</p>
       </footer>
 
     </div>
