@@ -1,7 +1,12 @@
 
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import { getEvents, registerForEvent } from '../utils/storage'
+import {
+  getEvents,
+  getRegistrations,
+  registerForEvent
+} from '../utils/storage'
 import '../App.css'
 
 function Registration() {
@@ -13,6 +18,8 @@ function Registration() {
     department: '',
     eventId: ''
   })
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     setEvents(getEvents())
@@ -28,23 +35,26 @@ function Registration() {
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    if (events.length === 0) {
+      alert('No events are currently available!')
+      return
+    }
+
     const selectedEvent = events.find(
       (event) => String(event.id) === formData.eventId
     )
 
     if (!selectedEvent) {
-      alert('Please select an event!')
+      alert('Please select a valid event!')
       return
     }
 
-    const registrations = JSON.parse(
-      localStorage.getItem('college_registrations') || '[]'
-    )
+    const registrations = getRegistrations()
 
     const alreadyRegistered = registrations.some(
-      (item) =>
-        item.eventId === selectedEvent.id &&
-        item.email === formData.email
+      (registration) =>
+        registration.eventId === selectedEvent.id &&
+        registration.email?.toLowerCase() === formData.email.trim().toLowerCase()
     )
 
     if (alreadyRegistered) {
@@ -56,8 +66,8 @@ function Registration() {
       id: Date.now(),
       eventId: selectedEvent.id,
       eventTitle: selectedEvent.title,
-      studentName: formData.studentName,
-      email: formData.email,
+      studentName: formData.studentName.trim(),
+      email: formData.email.trim(),
       department: formData.department,
       registeredAt: new Date().toLocaleDateString()
     })
@@ -70,6 +80,8 @@ function Registration() {
       department: '',
       eventId: ''
     })
+
+    navigate('/my-events')
   }
 
   return (
@@ -83,94 +95,120 @@ function Registration() {
           Student Event Registration
         </h2>
 
-        <div className="card shadow p-4 mx-auto"
-          style={{ maxWidth: '600px' }}>
+        <div className="row justify-content-center">
 
-          <form onSubmit={handleSubmit}>
+          <div className="col-md-7">
 
-            <div className="mb-3">
-              <label className="form-label">
-                Student Name
-              </label>
+            <div className="card shadow p-4">
 
-              <input
-                type="text"
-                name="studentName"
-                className="form-control"
-                placeholder="Enter your name"
-                value={formData.studentName}
-                onChange={handleChange}
-                required
-              />
+              <h4 className="text-center mb-4">
+                Register for an Event
+              </h4>
+
+              <form onSubmit={handleSubmit}>
+
+                <div className="mb-3">
+                  <label className="form-label">
+                    Student Name
+                  </label>
+
+                  <input
+                    type="text"
+                    name="studentName"
+                    className="form-control"
+                    placeholder="Enter your full name"
+                    value={formData.studentName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">
+                    Email Address
+                  </label>
+
+                  <input
+                    type="email"
+                    name="email"
+                    className="form-control"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">
+                    Department
+                  </label>
+
+                  <select
+                    name="department"
+                    className="form-select"
+                    value={formData.department}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    <option value="CSE">Computer Science</option>
+                    <option value="CSE AI">CSE Artificial Intelligence</option>
+                    <option value="ECE">Electronics and Communication</option>
+                    <option value="EEE">Electrical and Electronics</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label">
+                    Select Event
+                  </label>
+
+                  <select
+                    name="eventId"
+                    className="form-select"
+                    value={formData.eventId}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Choose an Event</option>
+
+                    {events.map((event) => (
+                      <option
+                        key={event.id}
+                        value={event.id}
+                      >
+                        {event.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  className="register-btn w-100"
+                  disabled={events.length === 0}
+                >
+                  Submit Registration
+                </button>
+
+              </form>
+
+              {events.length === 0 && (
+                <p className="text-danger text-center mt-3">
+                  No events available. Please check again later.
+                </p>
+              )}
+
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">
-                Email Address
-              </label>
-
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">
-                Department
-              </label>
-
-              <select
-                name="department"
-                className="form-select"
-                value={formData.department}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Department</option>
-                <option value="CSE">CSE</option>
-                <option value="CSE AI">CSE AI</option>
-                <option value="ECE">ECE</option>
-                <option value="EEE">EEE</option>
-                <option value="Mechanical">Mechanical</option>
-                <option value="Civil">Civil</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="form-label">
-                Select Event
-              </label>
-
-              <select
-                name="eventId"
-                className="form-select"
-                value={formData.eventId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Choose an event</option>
-
-                {events.map((event) => (
-                  <option key={event.id} value={event.id}>
-                    {event.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button type="submit" className="register-btn w-100">
-              Submit Registration
-            </button>
-
-          </form>
+          </div>
 
         </div>
+
       </div>
 
       <footer className="footer">
