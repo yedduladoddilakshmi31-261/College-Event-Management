@@ -1,11 +1,16 @@
 
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
-import { getEvents, saveEvents } from '../utils/storage'
+import {
+  getEvents,
+  saveEvents,
+  getRegistrations
+} from '../utils/storage'
 import '../App.css'
 
 function AdminDashboard() {
   const [events, setEvents] = useState([])
+  const [totalRegistrations, setTotalRegistrations] = useState(0)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -20,6 +25,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     setEvents(getEvents())
+    setTotalRegistrations(getRegistrations().length)
   }, [])
 
   const handleChange = (e) => {
@@ -27,6 +33,18 @@ function AdminDashboard() {
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      date: '',
+      category: 'Technical',
+      venue: '',
+      description: '',
+      image: ''
+    })
+    setEditId(null)
   }
 
   const handleSubmit = (e) => {
@@ -51,17 +69,7 @@ function AdminDashboard() {
 
     saveEvents(updatedEvents)
     setEvents(updatedEvents)
-
-    setFormData({
-      title: '',
-      date: '',
-      category: 'Technical',
-      venue: '',
-      description: '',
-      image: ''
-    })
-
-    setEditId(null)
+    resetForm()
 
     alert('Event saved successfully!')
   }
@@ -73,10 +81,11 @@ function AdminDashboard() {
       category: event.category,
       venue: event.venue,
       description: event.description,
-      image: event.image
+      image: event.image || ''
     })
 
     setEditId(event.id)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleDelete = (id) => {
@@ -91,6 +100,7 @@ function AdminDashboard() {
 
       saveEvents(updatedEvents)
       setEvents(updatedEvents)
+
       alert('Event deleted successfully!')
     }
   }
@@ -106,24 +116,37 @@ function AdminDashboard() {
           Admin Dashboard
         </h2>
 
+        {/* Dashboard Statistics */}
         <div className="row mb-4">
 
           <div className="col-md-4 mb-3">
-            <div className="card shadow p-3 text-center">
+            <div className="card shadow p-4 text-center">
               <h5>Total Events</h5>
-              <h2>{events.length}</h2>
+              <h2 className="text-primary">{events.length}</h2>
             </div>
           </div>
 
-          <div className="col-md-8 mb-3">
-            <div className="card shadow p-3">
+          <div className="col-md-4 mb-3">
+            <div className="card shadow p-4 text-center">
+              <h5>Total Registrations</h5>
+              <h2 className="text-success">
+                {totalRegistrations}
+              </h2>
+            </div>
+          </div>
+
+          <div className="col-md-4 mb-3">
+            <div className="card shadow p-4 text-center">
               <h5>Event Management</h5>
-              <p>Add, update and delete college events.</p>
+              <p className="mb-0">
+                Manage college events
+              </p>
             </div>
           </div>
 
         </div>
 
+        {/* Add or Edit Event Form */}
         <div className="card shadow p-4 mb-5">
 
           <h4 className="mb-4">
@@ -218,26 +241,16 @@ function AdminDashboard() {
               <button
                 type="button"
                 className="btn btn-secondary ms-2"
-                onClick={() => {
-                  setEditId(null)
-                  setFormData({
-                    title: '',
-                    date: '',
-                    category: 'Technical',
-                    venue: '',
-                    description: '',
-                    image: ''
-                  })
-                }}
+                onClick={resetForm}
               >
                 Cancel
               </button>
             )}
 
           </form>
-
         </div>
 
+        {/* Manage Events Table */}
         <h4 className="mb-3">Manage Events</h4>
 
         <div className="table-responsive">
@@ -253,28 +266,36 @@ function AdminDashboard() {
             </thead>
 
             <tbody>
-              {events.map((event) => (
-                <tr key={event.id}>
-                  <td>{event.title}</td>
-                  <td>{event.date}</td>
-                  <td>{event.category}</td>
-                  <td>
-                    <button
-                      className="btn btn-primary btn-sm me-2"
-                      onClick={() => handleEdit(event)}
-                    >
-                      Edit
-                    </button>
+              {events.length > 0 ? (
+                events.map((event) => (
+                  <tr key={event.id}>
+                    <td>{event.title}</td>
+                    <td>{event.date}</td>
+                    <td>{event.category}</td>
+                    <td>
+                      <button
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={() => handleEdit(event)}
+                      >
+                        Edit
+                      </button>
 
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleDelete(event.id)}
-                    >
-                      Delete
-                    </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(event.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">
+                    No events available
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
 
           </table>
@@ -291,3 +312,4 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard
+
