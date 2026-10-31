@@ -1,71 +1,92 @@
 # College Event Management System
 
-A React JS-based web application that helps students explore college events, register for events, and manage their registrations. Administrators can add, edit, and delete events.
+## About the Project
+The College Event Management System is a web-based application developed using React JS. It helps students explore college events, register for events, and view their registrations. Administrators can manage events and student registrations.
 
 ## Features
 
-- **Home Page:** Displays featured college events.
-- **Events Page:** Browse events and filter them by category.
-- **Student Registration:** Register for available events.
-- **Student Login:** Demonstration login and logout functionality.
-- **My Events:** View registered events.
-- **Admin Dashboard:** Add, update, and delete events.
-- **Local Storage:** Saves event and registration information in the browser.
+- **Home Page:** Displays an introduction and featured college events.
+- **Events Page:** View, search, and filter available events.
+- **Event Registration:** Students can register for college events.
+- **My Events:** View and cancel event registrations.
+- **Login Page:** Simple demo login interface.
+- **Admin Dashboard:** Add, edit, and delete events.
+- **Registration Management:** View, search, and manage student registrations.
+- **Responsive Design:** User-friendly layout for different screen sizes.
 
 ## Technologies Used
 
 - React JS
 - JavaScript
-- HTML5
-- CSS3
-- Bootstrap 5
-- React Router
+- HTML
+- CSS
+- Bootstrap
 - React Icons
-- Browser Local Storage
-- Vite
+- React Router DOM
+- Local Storage
 
 ## Project Structure
 
 ```text
-src/
-├── components/
-│   ├── Navbar.jsx
-│   └── EventCard.jsx
-├── pages/
-│   ├── Home.jsx
-│   ├── Events.jsx
-│   ├── Registration.jsx
-│   ├── MyEvents.jsx
-│   ├── AdminDashboard.jsx
-│   └── Login.jsx
-├── utils/
-│   └── storage.js
-├── App.jsx
-├── App.css
-├── index.css
-└── main.jsx
+College-Event-Management/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── Navbar.jsx
+│   │   └── EventCard.jsx
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── Events.jsx
+│   │   ├── Registration.jsx
+│   │   ├── MyEvents.jsx
+│   │   ├── AdminDashboard.jsx
+│   │   └── Login.jsx
+│   ├── utils/
+│   │   └── storage.js
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+├── index.html
+├── package.json
+└── vite.config.js
 ```
 
-## Main Modules
+## Installation and Setup
 
-1. Student Module
-2. Event Management Module
-3. Event Registration Module
-4. Admin Module
+1. Clone the repository:
 
-## Storage
+```bash
+git clone https://github.com/yedduladoddilakshmi31-261/College-Event-Management.git
+```
 
-This project uses browser Local Storage to save events, registrations, and demonstration login information.
+2. Open the project folder:
 
-**Note:** Login is a frontend demonstration and does not provide secure authentication. Data is stored locally in the browser.
+```bash
+cd College-Event-Management
+```
 
-## Future Enhancements
+3. Install dependencies:
 
-- Secure user authentication
-- Database integration
-- Event notifications
-- Email confirmation
-- Admin access control
+```bash
+npm install
+```
+
+4. Start the development server:
+
+```bash
+npm run dev
+```
+
+5. Open the local URL shown in the terminal.
+
+## Data Storage
+
+This project uses browser Local Storage to store event details, student registrations, and demo login information.
+
+## Note
+
+This is an academic project developed for learning and demonstrating React JS concepts. The login functionality is a demo and does not provide secure authentication.
 
 ## Author
 Y.Lakshmi
