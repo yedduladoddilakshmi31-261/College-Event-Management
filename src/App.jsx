@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -6,6 +5,7 @@ import Home from './pages/Home'
 import Events from './pages/Events'
 import Registration from './pages/Registration'
 import MyEvents from './pages/MyEvents'
+import AdminDashboard from './pages/AdminDashboard'
 
 function App() {
   return (
@@ -15,6 +15,7 @@ function App() {
         <Route path="/events" element={<Events />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/my-events" element={<MyEvents />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   )
