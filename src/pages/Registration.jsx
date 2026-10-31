@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import {
   getEvents,
@@ -12,14 +12,17 @@ import '../App.css'
 function Registration() {
   const [events, setEvents] = useState([])
 
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [formData, setFormData] = useState({
     studentName: '',
     email: '',
     department: '',
-    eventId: ''
+    eventId: location.state?.eventId
+      ? String(location.state.eventId)
+      : ''
   })
-
-  const navigate = useNavigate()
 
   useEffect(() => {
     setEvents(getEvents())
@@ -35,11 +38,6 @@ function Registration() {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    if (events.length === 0) {
-      alert('No events are currently available!')
-      return
-    }
-
     const selectedEvent = events.find(
       (event) => String(event.id) === formData.eventId
     )
@@ -54,7 +52,8 @@ function Registration() {
     const alreadyRegistered = registrations.some(
       (registration) =>
         registration.eventId === selectedEvent.id &&
-        registration.email?.toLowerCase() === formData.email.trim().toLowerCase()
+        registration.email?.toLowerCase() ===
+          formData.email.trim().toLowerCase()
     )
 
     if (alreadyRegistered) {
@@ -177,10 +176,7 @@ function Registration() {
                     <option value="">Choose an Event</option>
 
                     {events.map((event) => (
-                      <option
-                        key={event.id}
-                        value={event.id}
-                      >
+                      <option key={event.id} value={event.id}>
                         {event.title}
                       </option>
                     ))}
