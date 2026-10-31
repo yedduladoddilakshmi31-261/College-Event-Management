@@ -6,7 +6,7 @@ import Events from './pages/Events'
 import Registration from './pages/Registration'
 import MyEvents from './pages/MyEvents'
 import AdminDashboard from './pages/AdminDashboard'
-
+import Login from './pages/Login'
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +16,7 @@ function App() {
         <Route path="/register" element={<Registration />} />
         <Route path="/my-events" element={<MyEvents />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   )
