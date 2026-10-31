@@ -1,15 +1,30 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   FaCalendarAlt,
   FaHome,
   FaList,
   FaUser,
   FaClipboardList,
-  FaUserShield
+  FaUserShield,
+  FaSignOutAlt
 } from 'react-icons/fa'
 
 function Navbar() {
+  const [user, setUser] = useState('')
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setUser(localStorage.getItem('loggedInUser') || '')
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('loggedInUser')
+    setUser('')
+    alert('Logged out successfully!')
+    navigate('/login')
+  }
+
   return (
     <nav className="navbar navbar-expand-lg navbar-custom">
       <div className="container-fluid">
@@ -32,10 +47,6 @@ function Navbar() {
             <FaUser /> Register
           </Link>
 
-          <Link className="nav-link" to="/login">
-  <FaUser /> Login
-</Link>
-
           <Link className="nav-link" to="/my-events">
             <FaClipboardList /> My Events
           </Link>
@@ -43,6 +54,25 @@ function Navbar() {
           <Link className="nav-link" to="/admin">
             <FaUserShield /> Admin
           </Link>
+
+          {user ? (
+            <>
+              <span className="nav-link">
+                Welcome, {user}
+              </span>
+
+              <button
+                className="btn btn-outline-light btn-sm ms-2"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt /> Logout
+              </button>
+            </>
+          ) : (
+            <Link className="nav-link" to="/login">
+              <FaUser /> Login
+            </Link>
+          )}
 
         </div>
       </div>
