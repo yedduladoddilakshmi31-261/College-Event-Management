@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -6,7 +5,8 @@ import {
   FaHome,
   FaList,
   FaUser,
-  FaClipboardList
+  FaClipboardList,
+  FaUserShield
 } from 'react-icons/fa'
 
 function Navbar() {
@@ -34,6 +34,10 @@ function Navbar() {
 
           <Link className="nav-link" to="/my-events">
             <FaClipboardList /> My Events
+          </Link>
+
+          <Link className="nav-link" to="/admin">
+            <FaUserShield /> Admin
           </Link>
 
         </div>
