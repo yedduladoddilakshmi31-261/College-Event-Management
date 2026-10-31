@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import {
@@ -46,6 +47,7 @@ function AdminDashboard() {
       description: '',
       image: ''
     })
+
     setEditId(null)
   }
 
@@ -88,16 +90,33 @@ function AdminDashboard() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Delete event and its related registrations
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      const updatedEvents = events.filter(
-        (event) => event.id !== id
-      )
-
-      saveEvents(updatedEvents)
-      setEvents(updatedEvents)
-      alert('Event deleted successfully!')
+    if (!window.confirm(
+      'Are you sure you want to delete this event? Its student registrations will also be deleted.'
+    )) {
+      return
     }
+
+    const updatedEvents = events.filter(
+      (event) => event.id !== id
+    )
+
+    const updatedRegistrations = registrations.filter(
+      (registration) => registration.eventId !== id
+    )
+
+    saveEvents(updatedEvents)
+    saveRegistrations(updatedRegistrations)
+
+    setEvents(updatedEvents)
+    setRegistrations(updatedRegistrations)
+
+    if (editId === id) {
+      resetForm()
+    }
+
+    alert('Event and related registrations deleted successfully!')
   }
 
   const handleDeleteRegistration = (id) => {
@@ -108,6 +127,7 @@ function AdminDashboard() {
 
       saveRegistrations(updatedRegistrations)
       setRegistrations(updatedRegistrations)
+
       alert('Registration deleted successfully!')
     }
   }
@@ -125,7 +145,9 @@ function AdminDashboard() {
 
       <div className="container py-5">
 
-        <h2 className="section-title">Admin Dashboard</h2>
+        <h2 className="section-title">
+          Admin Dashboard
+        </h2>
 
         {/* Dashboard Statistics */}
         <div className="row mb-4">
@@ -133,7 +155,9 @@ function AdminDashboard() {
           <div className="col-md-4 mb-3">
             <div className="card shadow p-4 text-center">
               <h5>Total Events</h5>
-              <h2 className="text-primary">{events.length}</h2>
+              <h2 className="text-primary">
+                {events.length}
+              </h2>
             </div>
           </div>
 
@@ -149,7 +173,9 @@ function AdminDashboard() {
           <div className="col-md-4 mb-3">
             <div className="card shadow p-4 text-center">
               <h5>Event Management</h5>
-              <p className="mb-0">Manage college events</p>
+              <p className="mb-0">
+                Manage college events
+              </p>
             </div>
           </div>
 
@@ -163,10 +189,14 @@ function AdminDashboard() {
           </h4>
 
           <form onSubmit={handleSubmit}>
+
             <div className="row">
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">Event Name</label>
+                <label className="form-label">
+                  Event Name
+                </label>
+
                 <input
                   type="text"
                   name="title"
@@ -178,7 +208,10 @@ function AdminDashboard() {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">Event Date</label>
+                <label className="form-label">
+                  Event Date
+                </label>
+
                 <input
                   type="date"
                   name="date"
@@ -190,7 +223,10 @@ function AdminDashboard() {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">Category</label>
+                <label className="form-label">
+                  Category
+                </label>
+
                 <select
                   name="category"
                   className="form-select"
@@ -204,7 +240,10 @@ function AdminDashboard() {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">Venue</label>
+                <label className="form-label">
+                  Venue
+                </label>
+
                 <input
                   type="text"
                   name="venue"
@@ -216,7 +255,10 @@ function AdminDashboard() {
               </div>
 
               <div className="col-12 mb-3">
-                <label className="form-label">Description</label>
+                <label className="form-label">
+                  Description
+                </label>
+
                 <textarea
                   name="description"
                   className="form-control"
@@ -228,7 +270,10 @@ function AdminDashboard() {
               </div>
 
               <div className="col-12 mb-3">
-                <label className="form-label">Image URL</label>
+                <label className="form-label">
+                  Image URL
+                </label>
+
                 <input
                   type="url"
                   name="image"
@@ -259,9 +304,12 @@ function AdminDashboard() {
         </div>
 
         {/* Manage Events */}
-        <h4 className="mb-3">Manage Events</h4>
+        <h4 className="mb-3">
+          Manage Events
+        </h4>
 
         <div className="table-responsive mb-5">
+
           <table className="table table-bordered table-hover">
 
             <thead className="table-dark">
@@ -274,12 +322,15 @@ function AdminDashboard() {
             </thead>
 
             <tbody>
+
               {events.length > 0 ? (
                 events.map((event) => (
                   <tr key={event.id}>
+
                     <td>{event.title}</td>
                     <td>{event.date}</td>
                     <td>{event.category}</td>
+
                     <td>
                       <button
                         className="btn btn-primary btn-sm me-2"
@@ -295,6 +346,7 @@ function AdminDashboard() {
                         Delete
                       </button>
                     </td>
+
                   </tr>
                 ))
               ) : (
@@ -304,13 +356,16 @@ function AdminDashboard() {
                   </td>
                 </tr>
               )}
+
             </tbody>
 
           </table>
         </div>
 
         {/* Student Registrations */}
-        <h4 className="mb-3">Student Registrations</h4>
+        <h4 className="mb-3">
+          Student Registrations
+        </h4>
 
         <input
           type="text"
@@ -321,6 +376,7 @@ function AdminDashboard() {
         />
 
         <div className="table-responsive">
+
           <table className="table table-bordered table-hover">
 
             <thead className="table-dark">
@@ -336,15 +392,18 @@ function AdminDashboard() {
             </thead>
 
             <tbody>
+
               {filteredRegistrations.length > 0 ? (
                 filteredRegistrations.map((registration, index) => (
                   <tr key={registration.id}>
+
                     <td>{index + 1}</td>
                     <td>{registration.studentName || 'N/A'}</td>
                     <td>{registration.email || 'N/A'}</td>
                     <td>{registration.department || 'N/A'}</td>
                     <td>{registration.eventTitle || 'N/A'}</td>
                     <td>{registration.registeredAt || 'N/A'}</td>
+
                     <td>
                       <button
                         className="btn btn-danger btn-sm"
@@ -355,6 +414,7 @@ function AdminDashboard() {
                         Delete
                       </button>
                     </td>
+
                   </tr>
                 ))
               ) : (
@@ -364,9 +424,11 @@ function AdminDashboard() {
                   </td>
                 </tr>
               )}
+
             </tbody>
 
           </table>
+
         </div>
 
       </div>
