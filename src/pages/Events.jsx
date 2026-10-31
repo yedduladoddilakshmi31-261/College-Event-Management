@@ -1,65 +1,42 @@
 
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import EventCard from '../components/EventCard'
-import { getEvents, getRegistrations, registerForEvent } from '../utils/storage'
+import {
+  getRegistrations,
+  saveRegistrations
+} from '../utils/storage'
 import '../App.css'
 
-function Events() {
-  const [events, setEvents] = useState([])
+function MyEvents() {
+  const [registrations, setRegistrations] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [category, setCategory] = useState('All')
-
-  const navigate = useNavigate()
 
   useEffect(() => {
-    setEvents(getEvents())
+    setRegistrations(getRegistrations())
   }, [])
 
-  const handleRegister = (event) => {
-    const studentName = window.prompt('Enter your name to register:')
-
-    if (!studentName || !studentName.trim()) {
-      return
-    }
-
-    const registrations = getRegistrations()
-
-    const alreadyRegistered = registrations.some(
-      (registration) =>
-        registration.eventId === event.id &&
-        registration.studentName?.toLowerCase() === studentName.trim().toLowerCase()
+  const handleCancel = (id) => {
+    const confirmCancel = window.confirm(
+      'Are you sure you want to cancel this registration?'
     )
 
-    if (alreadyRegistered) {
-      alert('You are already registered for this event!')
-      return
+    if (confirmCancel) {
+      const updatedRegistrations = registrations.filter(
+        (registration) => registration.id !== id
+      )
+
+      saveRegistrations(updatedRegistrations)
+      setRegistrations(updatedRegistrations)
+
+      alert('Registration cancelled successfully!')
     }
-
-    registerForEvent({
-      id: Date.now(),
-      eventId: event.id,
-      eventTitle: event.title,
-      studentName: studentName.trim(),
-      registeredAt: new Date().toLocaleDateString()
-    })
-
-    alert('Registration successful!')
-    navigate('/my-events')
   }
 
-  const filteredEvents = events.filter((event) => {
-    const matchesSearch =
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.venue.toLowerCase().includes(searchTerm.toLowerCase())
-
-    const matchesCategory =
-      category === 'All' || event.category === category
-
-    return matchesSearch && matchesCategory
-  })
+  const filteredRegistrations = registrations.filter((registration) =>
+    `${registration.studentName || ''} ${registration.eventTitle || ''} ${registration.email || ''}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="app-container">
@@ -68,66 +45,89 @@ function Events() {
 
       <div className="container py-5">
 
-        <h2 className="section-title">Explore College Events</h2>
+        <h2 className="section-title">
+          My Registered Events
+        </h2>
 
-        {/* Search and Filter */}
-        <div className="row mb-4">
+        <div className="card shadow p-4">
 
-          <div className="col-md-6 mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search events by name, description or venue..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+          <input
+            type="text"
+            className="form-control mb-4"
+            placeholder="Search by student name, email or event..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
 
-          <div className="col-md-6 mb-3">
-            <select
-              className="form-select"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="All">All Categories</option>
-              <option value="Technical">Technical</option>
-              <option value="Cultural">Cultural</option>
-              <option value="Sports">Sports</option>
-            </select>
-          </div>
+          <h5 className="mb-3">
+            Total Registrations: {registrations.length}
+          </h5>
 
-        </div>
+          {filteredRegistrations.length > 0 ? (
 
-        <p className="text-muted mb-4">
-          Showing {filteredEvents.length} event(s)
-        </p>
+            <div className="table-responsive">
 
-        {/* Event Cards */}
-        <div className="row">
+              <table className="table table-bordered table-hover">
 
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onRegister={handleRegister}
-              />
-            ))
+                <thead className="table-dark">
+                  <tr>
+                    <th>S.No</th>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Event Name</th>
+                    <th>Department</th>
+                    <th>Registration Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredRegistrations.map((registration, index) => (
+                    <tr key={registration.id}>
+                      <td>{index + 1}</td>
+
+                      <td>
+                        {registration.studentName || 'N/A'}
+                      </td>
+
+                      <td>
+                        {registration.email || 'N/A'}
+                      </td>
+
+                      <td>
+                        {registration.eventTitle || 'N/A'}
+                      </td>
+
+                      <td>
+                        {registration.department || 'N/A'}
+                      </td>
+
+                      <td>
+                        {registration.registeredAt || 'N/A'}
+                      </td>
+
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleCancel(registration.id)}
+                        >
+                          Cancel
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+              </table>
+
+            </div>
+
           ) : (
-            <div className="col-12 text-center py-5">
-              <h4>No events found</h4>
+            <div className="text-center py-5">
+              <h4>No registrations found</h4>
               <p className="text-muted">
-                Try another search term or category.
+                Register for a college event to see it here.
               </p>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setSearchTerm('')
-                  setCategory('All')
-                }}
-              >
-                Clear Filters
-              </button>
             </div>
           )}
 
@@ -143,4 +143,4 @@ function Events() {
   )
 }
 
-export default Events
+export default MyEvents
