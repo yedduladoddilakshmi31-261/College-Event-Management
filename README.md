@@ -88,5 +88,6 @@ This project uses browser Local Storage to store event details, student registra
 
 This is an academic project developed for learning and demonstrating React JS concepts. The login functionality is a demo and does not provide secure authentication.
 
-## Author
-Y.Lakshmi
+## project information
+Project Name:College-Event-Management
+Team:Group 8
